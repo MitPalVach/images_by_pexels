@@ -1,10 +1,11 @@
-import {createClient, ErrorResponse, Photos, PhotosWithTotalResults} from "pexels";
-import {ThunkAction} from "redux-thunk";
-import {RootState} from "../index";
-import {GET_PHOTOS, PhotosAction, SET_ERROR} from "../types";
+import {createClient, PhotosWithTotalResults, ErrorResponse, Photos} from 'pexels';
+import {ThunkAction} from 'redux-thunk';
 
+import {RootState} from '../';
+import {PhotosAction, GET_PHOTOS, SET_ERROR} from '../types';
 
-const client = createClient('563492ad6f91700001000001515a20bbb2e84744a03a7e6c082810a8')
+const client = createClient(process.env.REACT_APP_PEXELS_API || '');
+// const client = createClient('error was called');
 
 export const getPhotos = (page: number, searchQuery: string, onSuccess: () => void, onError: () => void): ThunkAction<void, RootState, null, PhotosAction> => {
     return async dispatch => {
@@ -13,47 +14,50 @@ export const getPhotos = (page: number, searchQuery: string, onSuccess: () => vo
                 page,
                 query: searchQuery,
                 per_page: 10
-            })
-            if ('error' in photos) {
-                throw new Error(photos.error)
+            });
+
+            if ("error" in photos) {
+                throw new Error(photos.error);
             } else {
                 dispatch({
                     type: GET_PHOTOS,
                     payload: {
                         photos: photos.photos,
-                        page,
-                        total_results: photos.total_results,
+                        page: page,
+                        total_results: photos.total_results
                     }
-                })
-                onSuccess()
+                });
+                onSuccess();
             }
+
         } catch (err) {
-            dispatch(setError('error'))
-            onError()
+            dispatch(setError('err.message'));
+            onError();
         }
     }
 }
 
-export const getCreatedPhotos = (page: number, onSuccess: () => void, onError: () => void): ThunkAction<void, RootState, null, PhotosAction> => {
+export const getCuratedPhotos = (page: number, onSuccess: () => void, onError: () => void): ThunkAction<void, RootState, null, PhotosAction> => {
     return async dispatch => {
         try {
-            const photos: Photos | ErrorResponse = await client.photos.curated({page, per_page: 10})
-            if ('error' in photos) {
-                throw new Error(photos.error)
+            const photos: Photos | ErrorResponse = await client.photos.curated({page, per_page: 10});
+
+            if ("error" in photos) {
+                throw new Error(photos.error);
             } else {
                 dispatch({
                     type: GET_PHOTOS,
                     payload: {
                         photos: photos.photos,
-                        page,
-                        total_results: 0,
+                        page: page,
+                        total_results: 0
                     }
-                })
-                onSuccess()
+                });
+                onSuccess();
             }
         } catch (err) {
-            dispatch(setError('error'))
-            onError()
+            dispatch(setError('err.message'));
+            onError();
         }
     }
 }
@@ -61,18 +65,6 @@ export const getCreatedPhotos = (page: number, onSuccess: () => void, onError: (
 export const setError = (err: string): PhotosAction => {
     return {
         type: SET_ERROR,
-        payload: err,
+        payload: err
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

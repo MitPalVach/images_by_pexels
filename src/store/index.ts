@@ -1,23 +1,17 @@
-import photoReducer from "./reducers/photosReducer";
-import thunk from "redux-thunk";
-import {applyMiddleware, combineReducers, createStore} from "redux";
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
 
+import photoReducer from './reducers/photosReducer';
 
 const rootReducer = combineReducers({
-    photos: photoReducer,
-})
+  photos: photoReducer
+});
 
 const store = createStore(
-    rootReducer,
-    applyMiddleware(thunk)
-)
+  rootReducer,
+  applyMiddleware(thunk)
+);
 
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof rootReducer>;
 
-export default store
-
-
-
-
-
-
+export default store;
